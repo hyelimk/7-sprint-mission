@@ -1,0 +1,39 @@
+{
+  "type": "module",
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.0.0",
+    "@prisma/client": "^7.0.1",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "file-type": "^21.1.1",
+    "multer": "^2.0.2",
+    "pg": "^8.16.3",
+    "pug": "^3.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@types/pg": "^8.15.6",
+    "prisma": "^7.0.0",
+    "ts-node": "^10.9.2"
+  },
+  "name": "github-com-joohyung-park-ts-devcontainer-docker",
+  "version": "1.0.0",
+  "main": "prisma.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hyelimk/sprint3.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hyelimk/sprint3/issues"
+  },
+  "homepage": "https://github.com/hyelimk/sprint3#readme",
+  "description": ""
+}
