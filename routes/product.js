@@ -21,7 +21,7 @@ export class UnregisteredProduct {
       tags,
       description,
     };
-    validateUnregisteredProductInfo();
+    validateUnregisteredProductinfo(info);
 
     return new UnregisteredProduct(
       info.name,
@@ -33,7 +33,7 @@ export class UnregisteredProduct {
 }
 
 export class Product {
-  constructor(id, name, description, price, tags, createdAt) {
+  constructor(id, name, description, price, tags, createdAt, comments = []) {
     this.id = id;
     this.name = name;
     this.description = description;
@@ -43,15 +43,7 @@ export class Product {
     this.comments = comments;
   }
 
-  static fromEntity({
-    id,
-    name,
-    description,
-    price,
-    tags,
-    created_at,
-    updated_at,
-  }) {
+  static fromEntity({ id, name, description, price, tags = [], created_at }) {
     const info = {
       id: id.toString(),
       name,
@@ -60,6 +52,7 @@ export class Product {
       tags,
       createdAt: created_at,
     };
+    console.log("info fromEntiry:", info);
     validateProductInfo(info);
 
     return new Product(
@@ -72,6 +65,10 @@ export class Product {
     );
   }
 }
+function isNonNegative(value) {
+  return typeof value === "number" && value >= 0;
+}
+
 export class UnregisteredProductInfo {
   constructor(name, description, price, tags) {
     this.name = name;
@@ -127,9 +124,9 @@ function validatePrice(price) {
   }
 }
 
-function validateTag(tag) {
-  if (!Array.isArray(tag)) {
-    throw new Error("Tag must be an array.");
+function validateTag(tags) {
+  if (!Array.isArray(tags)) {
+    throw new Error("Tag 배열로 입력");
   }
 }
 
@@ -139,18 +136,19 @@ function validateCreateAt(createat) {
   }
 }
 
-function validateUpdatedAt(updatedat) {
-  if (new Date("2024-01-01") > updatedat) {
-    throw new Error(`Invalid updatedAt ${updatedat.toString()}`);
-  }
-}
-
-function validateProductInfo({ id, name, description, price, tag, createdAt }) {
+function validateProductInfo({
+  id,
+  name,
+  description,
+  price,
+  tags,
+  createdAt,
+}) {
   validateId(id);
   validateName(name);
   validateDescription(description);
   validatePrice(price);
-  validateTag(tag);
+  validateTag(tags);
   validateCreateAt(createdAt);
 }
 

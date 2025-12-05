@@ -1,3 +1,15 @@
+import { Product, UnregisteredProduct } from "./product.js";
+import { Router } from "express";
+import { prisma } from "../prisma/prisma.js";
+import { BadRequestError, NotFoundError } from "../errors/customErrors.js";
+import productCommentRouter from "./product-comment.route.js";
+import productImageRouter from "./product-image.route.js";
+
+export const productRouter = Router();
+
+productRouter.use("/:productId/image", productImageRouter);
+productRouter.use("/:productId/comments", productCommentRouter);
+
 productRouter.post("/", validatePostProduct, (req, res, next) => {
   const unregistered = UnregisteredProduct.fromInfo(req.body);
 
