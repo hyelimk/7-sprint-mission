@@ -28,6 +28,9 @@ Thumbs.db
 
 # VS Code 설정
 .vscode
-/generated/prisma
 
-/generated/prisma
+# prisma
+generated
+
+# 파일 저장 경로
+uploads
