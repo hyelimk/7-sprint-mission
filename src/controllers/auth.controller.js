@@ -1,65 +1,49 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { prisma, prismaClient } from "../lib/prismaClient.js";
-import BadRequestError from "../lib/error/errors.js";
-import ConflictError from "../lib/error/conflict.error.js";
-import { LoginBody } from "../structs/auth.js";        
+import { prisma } from "../lib/prismaClient.js";
+import {
+  NotFoundError,
+  ConflictError,
+  ForbiddenError,
+  BadRequestError,
+} from "../error/errors.js";
+import { RegisterBody, LoginBody } from "../validate/auth.js";
+import { generateTokens } from "../lib/token.js";
 
 export async function register(req, res) {
-  const { email, nickname, password } = req.body;
-  if (!email || !nickname || !password) {
-    throw new BadRequestError("email, nickname, password are required");
-  }
-
+  const { email, nickname, password } = RegisterBody.parse(req.body);
+  const isEmailExist = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+  if (isEmailExist) throw new BadRequestError("이미 사용 중인 이메일입니다.");
+  const isNicknameExist = await prisma.user.findUnique({
+    where: { nickname },
+    select: { id: true },
+  });
+  if (isNicknameExist)
+    throw new BadRequestError("이미 사용 중인 닉네임입니다.");
   const hashedPassword = await bcrypt.hash(password, 10);
-  try {
-    const user = await prisma.user.create({
-      data: {
-        email,
-        nickname,
-        password: hashedPassword,
-      },
-    });
-
-    const { password: _, ...userWithoutPassword } = user;
-    res.status(201).json(userWithoutPassword);
-  } catch (error) {
-    throw new ConflictError("Email already exists");
-  }
+  const user = await prisma.user.create({
+    data: {
+      email,
+      nickname,
+      password: hashedPassword,
+    },
+  });
+  const { password: _, ...userWithoutPassword } = user;
+  res.status(201).json(userWithoutPassword);
 }
 
-export async function login (req, res) {
-    consr email, password;
-  try {
-    ({ email, password } = LoginSchema.parse(req.body));
-  } catch (e) {
-    if (e instanceof ZodError) {
-      // 프로젝트 정책대로 메시지 통일
-      throw new BadRequestError("email, password are required");
-    }
-    throw e;
+export async function login(req, res) {
+  const { email, password } = LoginBody.parse(req.body);
+  const user = await prisma.user.findUnique({ where: { email } });
+
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    throw new BadRequestError("아이디 비밀번호 틀렸습니다");
   }
 
-  // 2) 유저 조회
-  const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) throw new UnauthorizedError("Invalid credentials");
-
-  // 3) 비밀번호 비교
-  const ok = await bcrypt.compare(password, user.password);
-  if (!ok) throw new UnauthorizedError("Invalid credentials");
-
-  // 4) Access Token 발급
-  const accessToken = jwt.sign(
-    { userId: user.id }, // Int
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN ?? "1h" }
-  );
-
-  // 5) password 제거 후 응답
-  const { password: _, ...userWithoutPassword } = user;
-
-  res.status(200).json({
-    accessToken,
-    user: userWithoutPassword,
-  });
+  const { accessToken, refreshToken } = generateTokens(user.id);
+  setTokenCookies(res, accessToken, refreshToken);
+  res.status(200).send({ message: "로그인 성공" });
 }

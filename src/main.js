@@ -1,4 +1,5 @@
 import express from "express";
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
 import { PORT, PUBLIC_PATH, STATIC_PATH } from "./lib/constants.js";
@@ -12,6 +13,7 @@ import errorHandler from "./ middlewares/errorhandler.js";
 const app = express();
 
 app.use(cors());
+app.use(cookieParser());
 app.use(express.json());
 app.use(STATIC_PATH, express.static(path.resolve(process.cwd(), PUBLIC_PATH)));
 

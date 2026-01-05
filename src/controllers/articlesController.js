@@ -1,16 +1,16 @@
 import { create } from "superstruct";
 import { prismaClient } from "../lib/prismaClient.js";
 import NotFoundError from "../lib/error/notfound.error.js";
-import { IdParamsStruct } from "../structs/commonStructs.js";
+import { IdParamsStruct } from "../validate/commonStructs.js";
 import {
   CreateArticleBodyStruct,
   UpdateArticleBodyStruct,
   GetArticleListParamsStruct,
-} from "../structs/articlesStructs.js";
+} from "../validate/articlesStructs.js";
 import {
   CreateCommentBodyStruct,
   GetCommentListParamsStruct,
-} from "../structs/commentsStruct.js";
+} from "../validate/commentsStruct.js";
 
 export async function createArticle(req, res) {
   const data = create(req.body, CreateArticleBodyStruct);
