@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User 스키마를 작성해 주세요.
+// id, email, nickname, image, password, createdAt, updatedAt 필드를 가집니다.
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  nickname  String
+  image     String?
+  password  String
+  createdAt DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime? @updatedAt @db.Timestamptz(6)
+
+  products Product[]
+}
+
+model Article {
+  id             Int       @id @default(autoincrement())
+  title          String
+  content        String
+  image          String?
+  ArticleComment Comment[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Product {
+  id             Int       @id @default(autoincrement())
+  name           String
+  description    String
+  price          Int
+  tags           String[]
+  images         String[]
+  ProductComment Comment[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  user           User      @relation(fields: [userId], references: [id])
+  userId         Int
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int?
+  article   Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  articleId Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
