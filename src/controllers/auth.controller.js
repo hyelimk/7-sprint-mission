@@ -10,23 +10,6 @@ import { RegisterBody, LoginBody } from "../validate/auth.js";
 import { generateTokens } from "../lib/token.js";
 import { setTokenCookies, clearTokenCookies } from "../lib/cookies.js";
 
-export async function testregister(req, res) {
-  try {
-    console.log("1. 요청 바디 확인:", req.body);
-    const { email, nickname, password } = RegisterBody.parse(req.body);
-
-    console.log("2. DB 조회 시작");
-    const isEmailExist = await prisma.user.findUnique({ where: { email } });
-
-    console.log("3. 비밀번호 해싱 시작");
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // ... 나머지 코드
-  } catch (error) {
-    console.error("!!! 여기서 에러 발생 !!!", error); // 에러의 정체를 터미널에 출력
-    throw error;
-  }
-}
 export async function register(req, res) {
   const { email, nickname, password } = RegisterBody.parse(req.body);
   const isEmailExist = await prisma.user.findUnique({

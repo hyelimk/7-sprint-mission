@@ -26,39 +26,48 @@ model User {
   updatedAt DateTime? @updatedAt @db.Timestamptz(6)
 
   products Product[]
+  articles Article[]
+  comments Comment[]
 }
 
 model Article {
-  id             Int       @id @default(autoincrement())
-  title          String
-  content        String
-  image          String?
-  ArticleComment Comment[]
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id])
+  userId   Int
+  comments Comment[]
 }
 
 model Product {
-  id             Int       @id @default(autoincrement())
-  name           String
-  description    String
-  price          Int
-  tags           String[]
-  images         String[]
-  ProductComment Comment[]
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  user           User      @relation(fields: [userId], references: [id])
-  userId         Int
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  price       Int
+  tags        String[]
+  images      String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id])
+  userId   Int
+  comments Comment[]
 }
 
 model Comment {
   id        Int      @id @default(autoincrement())
   content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
   product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId Int?
   article   Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
   articleId Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }

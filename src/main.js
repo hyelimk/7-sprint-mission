@@ -5,7 +5,7 @@ import path from "path";
 import { PORT, PUBLIC_PATH, STATIC_PATH } from "./lib/constants.js";
 import authRouter from "./routers/auth.routers.js";
 // import articlesRouter from "./routers/articlesRouter.js";
-// import productsRouter from "./routers/productsRouter.js";
+import productsRouter from "./routers/productsRouter.js";
 // import commentsRouter from "./routers/commentsRouter.js";
 // import imagesRouter from "./routers/imagesRouter.js";
 import errorHandler from "./ middlewares/errorhandler.js";
@@ -19,11 +19,26 @@ app.use(express.static(path.resolve(process.cwd(), PUBLIC_PATH)));
 
 app.use("/auth", authRouter);
 // app.use("/articles", articlesRouter);
-// app.use("/products", productsRouter);
+app.use("/products", productsRouter);
 // app.use("/comments", commentsRouter);
 // app.use("/images", imagesRouter);
 
 app.use(errorHandler);
+
+// 등록된 모든 라우트를 터미널에 출력해주는 코드
+app._router.stack.forEach((r) => {
+  if (r.route && r.route.path) {
+    console.log(`${Object.keys(r.route.methods)} ${r.route.path}`);
+  } else if (r.name === "router") {
+    r.handle.stack.forEach((handler) => {
+      if (handler.route) {
+        console.log(
+          `${Object.keys(handler.route.methods)} ${handler.route.path}`
+        );
+      }
+    });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
