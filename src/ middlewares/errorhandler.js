@@ -1,10 +1,15 @@
-import { HttpError } from "../error/errors.js";
+import { HttpError } from "../lib/errors.js";
 import { ZodError } from "zod";
 
 const errorHandler = (err, req, res, next) => {
+  console.error("======= ERROR LOG =======");
+  console.error(err);
+  console.error("=========================");
+
   if (err instanceof ZodError) {
     return res.status(400).json({
       message: err.errors?.[0]?.message || "잘못된 요청입니다.",
+      details: err.errors,
     });
   }
 
@@ -20,6 +25,7 @@ const errorHandler = (err, req, res, next) => {
   return res.status(status).json({
     status: status,
     message: message,
+    error: err.message,
   });
 };
 

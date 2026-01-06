@@ -26,7 +26,7 @@ export class NotFoundError extends HttpError {
 }
 
 export class ConflictError extends HttpError {
-  constructor(message = "리소스가 중복입니다.") {
+  constructor(message = "이미 존재하는 데이터입니다.") {
     super(409, message);
   }
 }
