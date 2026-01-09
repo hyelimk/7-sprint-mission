@@ -9,6 +9,6 @@ export const CreateProductBody = z.object({
   images: z.array(z.string()).optional().default([]),
 });
 
-export const GetProductListParams = PageParams;
+export const GetProductList = PageParams;
 
 export const UpdateProductBody = CreateProductBody.partial();

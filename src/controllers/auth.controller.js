@@ -1,11 +1,6 @@
 import bcrypt from "bcrypt";
 import { prisma } from "../lib/prismaClient.js";
-import {
-  NotFoundError,
-  ConflictError,
-  ForbiddenError,
-  BadRequestError,
-} from "../lib/errors.js";
+import { ConflictError, BadRequestError } from "../lib/errors.js";
 import { RegisterBody, LoginBody } from "../validate/auth.js";
 import { generateTokens } from "../lib/token.js";
 import { setTokenCookies, clearTokenCookies } from "../lib/cookies.js";
@@ -21,8 +16,7 @@ export async function register(req, res) {
     where: { nickname },
     select: { id: true },
   });
-  if (isNicknameExist)
-    throw new BadRequestError("이미 사용 중인 닉네임입니다.");
+  if (isNicknameExist) throw new ConflictError("이미 사용 중인 닉네임입니다.");
   const hashedPassword = await bcrypt.hash(password, 10);
   const user = await prisma.user.create({
     data: {
