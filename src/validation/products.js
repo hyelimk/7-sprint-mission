@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { PageParams } from "./commons.js";
 
-export const CreateProductBody = z.object({
+export const CreateProduct = z.object({
   name: z.string().min(1),
   description: z.string().min(1),
   price: z.coerce.number().int().min(0),
@@ -11,4 +11,4 @@ export const CreateProductBody = z.object({
 
 export const GetProductList = PageParams;
 
-export const UpdateProductBody = CreateProductBody.partial();
+export const UpdateProduct = CreateProduct.partial();

@@ -18,7 +18,7 @@ export function authenticate(options = { optional: false }) {
         select: { id: true },
       });
       if (!user) return res.status(401).json({ message: "유저 없음" });
-      req.user = { userId: user.id };
+      req.user = { id: user.id };
 
       return next();
     } catch {

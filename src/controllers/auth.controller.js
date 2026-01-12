@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { prisma } from "../lib/prismaClient.js";
 import { ConflictError, BadRequestError } from "../lib/errors.js";
-import { RegisterBody, LoginBody } from "../validate/auth.js";
+import { RegisterBody, LoginBody } from "../validation/auth.js";
 import { generateTokens } from "../lib/token.js";
 import { setTokenCookies, clearTokenCookies } from "../lib/cookies.js";
 

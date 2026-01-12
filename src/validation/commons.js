@@ -12,6 +12,8 @@ export const PageParams = z.object({
 });
 
 export const CursorParams = z.object({
-  cursor: z.coerce.number().int().positive().optional(),
-  limit: z.coerce.number().int().positive().max(50).default(10),
+  cursor: z.string().regex(/^\d+$/).transform(Number).optional(),
+  limit: z.string().regex(/^\d+$/).transform(Number).default("10"),
+  orderBy: z.enum(["recent"]).optional(),
+  keyword: z.string().min(1).optional(),
 });

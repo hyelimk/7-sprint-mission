@@ -1,10 +1,10 @@
 import { prisma } from "../lib/prismaClient.js";
-import NotFoundError from "../lib/error/notfound.error.js";
+import NotFoundError from "../lib/errors.js";
 import { IdParams } from "../validation/commons.js";
 import { UpdateComment } from "../validation/comments.js";
 
 export async function updateComment(req, res) {
-  const userId = req.user.userId;
+  const userId = req.user.id;
   const { id } = IdParams.parse(req.params);
   const { content } = UpdateComment.parse(req.body);
 
@@ -27,7 +27,7 @@ export async function updateComment(req, res) {
 }
 
 export async function deleteComment(req, res) {
-  const userId = req.user.userId;
+  const userId = req.user.id;
   const { id } = IdParams.parse(req.params);
 
   const existing = await prisma.comment.findUnique({

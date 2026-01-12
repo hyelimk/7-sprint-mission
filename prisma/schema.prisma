@@ -13,9 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// User 스키마를 작성해 주세요.
-// id, email, nickname, image, password, createdAt, updatedAt 필드를 가집니다.
-
 model User {
   id        Int       @id @default(autoincrement())
   email     String    @unique
@@ -25,9 +22,11 @@ model User {
   createdAt DateTime  @default(now()) @db.Timestamptz(6)
   updatedAt DateTime? @updatedAt @db.Timestamptz(6)
 
-  products Product[]
-  articles Article[]
-  comments Comment[]
+  products     Product[]
+  articles     Article[]
+  comments     Comment[]
+  productLikes ProductLike[]
+  articleLikes ArticleLike[]
 }
 
 model Article {
@@ -35,12 +34,13 @@ model Article {
   title     String
   content   String
   image     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
-  user     User      @relation(fields: [userId], references: [id])
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   Int
   comments Comment[]
+  likes    ArticleLike[]
 }
 
 model Product {
@@ -50,12 +50,13 @@ model Product {
   price       Int
   tags        String[]
   images      String[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(6)
 
-  user     User      @relation(fields: [userId], references: [id])
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   Int
   comments Comment[]
+  likes    ProductLike[]
 }
 
 model Comment {
@@ -70,4 +71,32 @@ model Comment {
   productId Int?
   article   Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
   articleId Int?
+}
+
+model ProductLike {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  productId Int
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([productId])
+  @@index([userId])
+}
+
+model ArticleLike {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  articleId Int
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, articleId])
+  @@index([articleId])
+  @@index([userId])
 }
