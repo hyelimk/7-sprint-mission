@@ -5,7 +5,8 @@
   },
   "devDependencies": {
     "prettier": "^3.3.2",
-    "prisma": "^5.16.2"
+    "prisma": "^5.16.2",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
     "@prisma/client": "^5.16.2",
@@ -20,7 +21,7 @@
     "uuid": "^11.0.5",
     "zod": "^4.3.5"
   },
-  "name": "sprint-4",
+  "name": "sprint-missoin",
   "version": "1.0.0",
   "main": "index.js",
   "directories": {
