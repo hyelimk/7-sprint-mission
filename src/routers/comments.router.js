@@ -1,6 +1,6 @@
 import express from "express";
 import { withAsync } from "../lib/withAsync.js";
-import { authenticate } from "../middlewares/authenticate.js";
+import { authenticate } from "../ middlewares/authenticate.js";
 import {
   updateComment,
   deleteComment,

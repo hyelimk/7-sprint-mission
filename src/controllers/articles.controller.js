@@ -2,15 +2,15 @@ import { prisma } from "../lib/prismaClient.js";
 import { NotFoundError, ForbiddenError, ConflictError } from "../lib/errors.js";
 import { IdParams } from "../validation/commons.js";
 import {
-  CreateArticleBody,
-  UpdateArticleBody,
+  CreateArticle,
+  UpdateArticle,
   GetArticleList,
 } from "../validation/articles.js";
 import { CreateComment, GetCommentListParams } from "../validation/comments.js";
 
 export async function createArticle(req, res) {
   const userId = req.user.id;
-  const data = CreateArticleBody.parse(req.body);
+  const data = CreateArticle.parse(req.body);
 
   const article = await prisma.article.create({
     data: { ...data, userId },
@@ -50,7 +50,7 @@ export async function getArticle(req, res) {
 
 export async function updateArticle(req, res) {
   const { id } = IdParams.parse(req.params);
-  const data = UpdateArticleBody.parse(req.body);
+  const data = UpdateArticle.parse(req.body);
 
   const existingArticle = await prisma.article.findUnique({
     where: { id },
@@ -68,7 +68,7 @@ export async function updateArticle(req, res) {
 }
 
 export async function deleteArticle(req, res) {
-  const { id } = create(req.params, IdParamsStruct);
+  const { id } = create(req.params, IdParams);
   const existingArticle = await prisma.article.findUnique({
     where: { id },
   });

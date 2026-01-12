@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prismaClient.js";
-import NotFoundError from "../lib/errors.js";
+import { NotFoundError } from "../lib/errors.js";
 import { IdParams } from "../validation/commons.js";
 import { UpdateComment } from "../validation/comments.js";
 

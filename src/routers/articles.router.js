@@ -7,25 +7,25 @@ import {
   updateArticle,
   deleteArticle,
   createArticleComment,
-  getcomments,
-  likeProduct,
-  unlikeProduct,
+  getCommentList,
+  likeArticle,
+  unlikeArticle,
 } from "../controllers/articles.controller.js";
-
+import { authenticate } from "../ middlewares/authenticate.js";
 const articlesRouter = express.Router();
 
 articlesRouter.post("/", authenticate(), withAsync(createArticle));
-articlesRouter.get("/", withAsync(getArticleList));
 articlesRouter.get("/:id", withAsync(getArticle));
 articlesRouter.patch("/:id", authenticate(), withAsync(updateArticle));
 articlesRouter.delete("/:id", authenticate(), withAsync(deleteArticle));
+articlesRouter.get("/", withAsync(getArticleList));
 articlesRouter.post(
   "/:id/comments",
   authenticate(),
   withAsync(createArticleComment)
 );
-articlesRouter.get("/:id/comments", withAsync(getcomments));
-articlesRouter.post("/:id/like", authenticate(), withAsync(likeProduct));
-articlesRouter.delete("/:id/like", authenticate(), withAsync(unlikeProduct));
+articlesRouter.get("/:id/comments", withAsync(getCommentList));
+articlesRouter.post("/:id/like", authenticate(), withAsync(likeArticle));
+articlesRouter.delete("/:id/like", authenticate(), withAsync(unlikeArticle));
 
 export default articlesRouter;
