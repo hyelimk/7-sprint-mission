@@ -1,12 +1,22 @@
+import type { RequestHandler } from "express";
 import { ACCESS_TOKEN_COOKIE_NAME } from "../lib/constants.js";
 import { verifyAccessToken } from "../lib/token.js";
 import { prisma } from "../lib/prismaClient.js";
 
-export function authenticate(options = { optional: false }) {
+type AuthenticateOptions = {
+  optional?: boolean;
+};
+
+export function authenticate(
+  options: AuthenticateOptions = {}
+): RequestHandler {
+  const { optional = false } = options;
+
   return async (req, res, next) => {
     const token = req.cookies?.[ACCESS_TOKEN_COOKIE_NAME];
+
     if (!token) {
-      if (options.optional) return next();
+      if (options) return next();
       return res.status(401).json({ message: "토큰 없음" });
     }
 

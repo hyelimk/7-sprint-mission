@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PageParams } from "./commons.js";
+import { PageParams } from "./commons.schema";
 
 export const CreateProduct = z.object({
   name: z.string().min(1),

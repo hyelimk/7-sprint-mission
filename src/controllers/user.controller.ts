@@ -1,13 +1,37 @@
 import { prisma } from "../lib/prismaClient.js";
-import { NotFoundError, BadRequestError } from "../lib/errors.js";
+import {
+  NotFoundError,
+  BadRequestError,
+  ForbiddenError,
+} from "../lib/errors.js";
 import {
   UpdateMe,
   ChangePassword,
   GetproductParams,
 } from "../validation/user.js";
-export async function getMe(req, res) {
-  const user = await prisma.user.findUnique({
-    where: { id: req.user.id },
+import type { Request, Response } from "express";
+import bcrypt from "bcrypt";
+
+export function requireUser(req: Request) {
+  if (!req.user) {
+    throw new ForbiddenError("로그인이 필요합니다.");
+  }
+  return req.user;
+}
+function stripUndefined<T extends Record<string, unknown>>(obj: T) {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([, v]) => v !== undefined)
+  ) as {
+    [K in keyof T as T[K] extends undefined ? never : K]: Exclude<
+      T[K],
+      undefined
+    >;
+  };
+}
+export async function getMe(req: Request, res: Response) {
+  const authUser = requireUser(req);
+  const data = await prisma.user.findUnique({
+    where: { id: authUser.id },
     select: {
       id: true,
       email: true,
@@ -17,19 +41,21 @@ export async function getMe(req, res) {
       updatedAt: true,
     },
   });
-
-  if (!user) {
+  //
+  if (!data) {
     throw new NotFoundError("유저를 찾을 수 없습니다.");
   }
 
-  return res.json(user);
+  return res.json(data);
 }
 
-export async function updateMe(req, res) {
-  const data = UpdateMe.parse(req.body);
+export async function updateMe(req: Request, res: Response) {
+  const authUser = requireUser(req);
+  const parsed = UpdateMe.parse(req.body);
+  const data = stripUndefined(parsed);
 
   const updated = await prisma.user.update({
-    where: { id: req.user.id },
+    where: { id: authUser.id },
     data,
     select: {
       id: true,
@@ -44,11 +70,12 @@ export async function updateMe(req, res) {
   return res.json(updated);
 }
 
-export async function changePassword(req, res) {
+export async function changePassword(req: Request, res: Response) {
+  const authUser = requireUser(req);
   const { currentPassword, newPassword } = ChangePassword.parse(req.body);
 
   const user = await prisma.user.findUnique({
-    where: { id: req.user.id },
+    where: { id: authUser.id },
     select: { id: true, password: true },
   });
 
@@ -64,20 +91,22 @@ export async function changePassword(req, res) {
   const hashed = await bcrypt.hash(newPassword, 10);
 
   await prisma.user.update({
-    where: { id: req.user.id },
+    where: { id: authUser.id },
     data: { password: hashed },
   });
 
   return res.json({ message: "비밀번호가 변경되었습니다." });
 }
 
-export async function getMyProducts(req, res) {
+export async function getMyProducts(req: Request, res: Response) {
+  const authUser = requireUser(req);
+
   const { page, pageSize } = GetproductParams.parse(req.query);
 
   const skip = (page - 1) * pageSize;
 
   const data = await prisma.product.findMany({
-    where: { userId: req.user.id },
+    where: { userId: authUser.id },
     orderBy: { createdAt: "desc" },
     skip,
     take: pageSize,
@@ -87,16 +116,18 @@ export async function getMyProducts(req, res) {
   return res.json({ data });
 }
 
-export async function likedProducts(req, res) {
+export async function likedProducts(req: Request, res: Response) {
+  const authUser = requireUser(req);
+
   const likes = await prisma.productLike.findMany({
-    where: { userId: req.user.id },
+    where: { userId: authUser.id },
     orderBy: { createdAt: "desc" },
     include: {
       product: true,
     },
   });
 
-  return res.send(
+  return res.json(
     likes.map((like) => ({
       ...like.product,
       isLiked: true,

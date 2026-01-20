@@ -1,31 +1,27 @@
-import { HttpError } from "../lib/errors.js";
+import type { ErrorRequestHandler } from "express";
 import { ZodError } from "zod";
+import { HttpError } from "../lib/errors";
 
-const errorHandler = (err, req, res, next) => {
+const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   console.error("======= ERROR LOG =======");
   console.error(err);
   console.error("=========================");
 
   if (err instanceof ZodError) {
     return res.status(400).json({
-      message: err.errors?.[0]?.message || "잘못된 요청입니다.",
-      details: err.errors,
+      message: err.issues[0]?.message ?? "잘못된 요청입니다.",
+      details: err.issues,
     });
   }
 
   if (err instanceof HttpError) {
-    const status = err.statusCode || err.status;
-    return res.status(status).json({
-      status: status,
+    return res.status(err.statusCode).json({
       message: err.message,
     });
   }
-  const status = 500;
-  const message = "서버 내부 오류 발생.";
-  return res.status(status).json({
-    status: status,
-    message: message,
-    error: err.message,
+  console.error(err);
+  return res.status(500).json({
+    message: "서버 내부 오류",
   });
 };
 

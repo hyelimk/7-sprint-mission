@@ -1,5 +1,5 @@
 import { prisma } from "../lib/prismaClient.js";
-import { NotFoundError } from "../lib/errors.js";
+import { NotFoundError, ForbiddenError } from "../lib/errors.js";
 import { IdParams } from "../validation/commons.js";
 import { UpdateComment } from "../validation/comments.js";
 
@@ -15,7 +15,7 @@ export async function updateComment(req, res) {
 
   if (!existing) throw new NotFoundError("comment", id);
   if (existing.userId !== userId) {
-    throw new ForbiddenError("작성자만 수정할 수 있습니다.");
+    throw new src("작성자만 수정할 수 있습니다.");
   }
 
   const updated = await prisma.comment.update({

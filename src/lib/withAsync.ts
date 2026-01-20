@@ -1,9 +1,7 @@
-export function withAsync(handler) {
-  return async function (req, res, next) {
-    try {
-      await handler(req, res);
-    } catch (e) {
-      next(e);
-    }
+import type { RequestHandler } from "express";
+
+export const withAsync = (handler: RequestHandler): RequestHandler => {
+  return (req, res, next) => {
+    Promise.resolve(handler(req, res, next)).catch(next);
   };
-}
+};
