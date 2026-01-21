@@ -8,7 +8,7 @@ import {
   UpdateMe,
   ChangePassword,
   GetproductParams,
-} from "../validation/user.js";
+} from "../validation/user.schema";
 import type { Request, Response } from "express";
 import bcrypt from "bcrypt";
 
@@ -20,7 +20,7 @@ export function requireUser(req: Request) {
 }
 function stripUndefined<T extends Record<string, unknown>>(obj: T) {
   return Object.fromEntries(
-    Object.entries(obj).filter(([, v]) => v !== undefined)
+    Object.entries(obj).filter(([, v]) => v !== undefined),
   ) as {
     [K in keyof T as T[K] extends undefined ? never : K]: Exclude<
       T[K],
@@ -131,6 +131,6 @@ export async function likedProducts(req: Request, res: Response) {
     likes.map((like) => ({
       ...like.product,
       isLiked: true,
-    }))
+    })),
   );
 }

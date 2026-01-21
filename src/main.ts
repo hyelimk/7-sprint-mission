@@ -27,21 +27,6 @@ app.use("/user", userRouter);
 
 app.use(errorHandler);
 
-// // 등록된 모든 라우트를 터미널에 출력해주는 코드
-// app._router.stack.forEach((r) => {
-//   if (r.route && r.route.path) {
-//     console.log(`${Object.keys(r.route.methods)} ${r.route.path}`);
-//   } else if (r.name === "router") {
-//     r.handle.stack.forEach((handler) => {
-//       if (handler.route) {
-//         console.log(
-//           `${Object.keys(handler.route.methods)} ${handler.route.path}`
-//         );
-//       }
-//     });
-//   }
-// });
-
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
 });

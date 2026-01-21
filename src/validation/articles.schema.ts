@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PageParams } from "./commons.js";
+import { PageParams } from "./commons.schema";
 
 export const CreateArticle = z.object({
   title: z.string().min(1),

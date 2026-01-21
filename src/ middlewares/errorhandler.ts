@@ -3,10 +3,6 @@ import { ZodError } from "zod";
 import { HttpError } from "../lib/errors";
 
 const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
-  console.error("======= ERROR LOG =======");
-  console.error(err);
-  console.error("=========================");
-
   if (err instanceof ZodError) {
     return res.status(400).json({
       message: err.issues[0]?.message ?? "잘못된 요청입니다.",
