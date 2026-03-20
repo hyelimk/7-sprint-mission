@@ -17,7 +17,7 @@ export async function createArticle(data: CreateArticleData): Promise<Article> {
 }
 
 export async function getArticle(id: number): Promise<Article | null> {
-  const article = await articlesRepository.getArticleWithLkes(id);
+  const article = await articlesRepository.getArticleWithLikes(id);
   if (!article) {
     throw new NotFoundError('article', id);
   }

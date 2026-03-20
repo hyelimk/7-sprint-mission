@@ -1,7 +1,7 @@
 import {
     createArticle,
     getArticle,
-    getArticleWithLkes,
+    getArticleWithLikes,
     getArticleListWithLikes,
     updateArticleWithLikes,
     deleteArticle,

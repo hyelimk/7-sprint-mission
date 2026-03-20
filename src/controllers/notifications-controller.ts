@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { create } from 'superstruct';
 import { IdParamsStruct } from '../structs/commonStructs';
-import * as notificationsService from '../services/notifications-service.ts';
+import * as notificationsService from '../services/notifications-service';
 
 export async function readNotification(req: Request, res: Response) {
     const { id } = create(req.params, IdParamsStruct);

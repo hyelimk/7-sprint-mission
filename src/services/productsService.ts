@@ -5,7 +5,7 @@ import * as favoritesRepository from '../repositories/favoritesRepository';
 import * as notificationsService from './notifications-service';
 import { PagePaginationParams, PagePaginationResult } from '../types/pagination';
 import Product from '../types/Product';
-import { NotificationType } from '../types/Notification';
+import { NotificationType } from '../types/notification';
 
 type CreateProductData = Omit<
   Product,

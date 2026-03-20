@@ -1,8 +1,8 @@
-import { Article } from '@prisma/client';
+import { Prisma, Like } from '@prisma/client';
 import { prismaClient } from '../lib/prismaClient';
 import { PagePaginationParams } from '../types/pagination';
 
-export async function createArticle(data: Omit<Article, 'id' | 'createdAt' | 'updatedAt'>) {
+export async function createArticle(data: Prisma.ArticleUncheckedCreateInput) {
   const createdArticle = await prismaClient.article.create({
     data,
   });
@@ -14,7 +14,7 @@ export async function getArticle(id: number) {
   return article;
 }
 
-export async function getArticleWithLkes(id: number, { userId }: { userId?: number } = {}) {
+export async function getArticleWithLikes(id: number, { userId }: { userId?: number } = {}) {
   const article = await prismaClient.article.findUnique({
     where: { id },
     include: {
@@ -30,7 +30,7 @@ export async function getArticleWithLkes(id: number, { userId }: { userId?: numb
     ...article,
     likes: undefined,
     likeCount: article.likes.length,
-    isLiked: userId ? article.likes.some((like) => like.userId === userId) : undefined,
+    isLiked: userId ? article.likes.some((like: Like) => like.userId === userId) : undefined,
   };
 }
 
@@ -42,7 +42,7 @@ export async function getArticleListWithLikes(
     userId?: number;
   } = {},
 ) {
-  const where = {
+  const where: Prisma.ArticleWhereInput = {
     title: keyword ? { contains: keyword } : undefined,
   };
 
@@ -57,12 +57,14 @@ export async function getArticleListWithLikes(
     },
   });
 
-  const mappedArticles = articles.map((article) => ({
-    ...article,
-    likes: undefined,
-    likeCount: article.likes.length,
-    isLiked: userId ? article.likes.some((like) => like.userId === userId) : undefined,
-  }));
+  const mappedArticles = articles.map(
+    (article: Prisma.ArticleGetPayload<{ include: { likes: true } }>) => ({
+      ...article,
+      likes: undefined,
+      likeCount: article.likes.length,
+      isLiked: userId ? article.likes.some((like: Like) => like.userId === userId) : undefined,
+    }),
+  );
 
   return {
     list: mappedArticles,
@@ -70,7 +72,10 @@ export async function getArticleListWithLikes(
   };
 }
 
-export async function updateArticleWithLikes(id: number, data: Partial<Article>) {
+export async function updateArticleWithLikes(
+  id: number,
+  data: Prisma.ArticleUncheckedUpdateInput,
+) {
   const updatedArticle = await prismaClient.article.update({
     where: { id },
     data,
@@ -78,12 +83,15 @@ export async function updateArticleWithLikes(id: number, data: Partial<Article>)
       likes: true,
     },
   });
+
   return {
     ...updatedArticle,
+    likes: undefined,
     likeCount: updatedArticle.likes.length,
-    isLiked: data.userId
-      ? updatedArticle.likes.some((like) => like.userId === data.userId)
-      : undefined,
+    isLiked:
+      typeof data.userId === 'number'
+        ? updatedArticle.likes.some((like: Like) => like.userId === data.userId)
+        : undefined,
   };
 }
 
